@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/nginx-vhosts/functions"
+source "$PLUGIN_AVAILABLE_PATH/config/functions"
+
+graceful_maintenance_on_cmd() {
+  declare desc="enables maintenance mode"
+  local cmd="graceful-maintenance:on"
+  local app=$2
+
+  [[ -z $app ]] && dokku_log_fail "Please specify an app to run the command on"
+  verify_app_name $app
+
+  local endpoint=$(config_get "$app" HEALTHCHECK_ENDPOINT)
+  [[ -z $endpoint ]] && dokku_log_fail "No healthcheck endpoint specified. Specify it with HEALTHCHECK_ENDPOINT env variable"
+
+  dokku_log_info1 "Enabling maintenance mode for $app"
+
+  local nginx_conf_directory="$DOKKU_ROOT/$app/nginx.conf.d"
+  [[ -d "$nginx_conf_directory" ]] || mkdir "$nginx_conf_directory"
+
+  cat > "$nginx_conf_directory/maintenance.conf" << EOF
+location $endpoint {
+  try_files \$uri =503;
+}
+EOF
+
+  restart_nginx
+  dokku_log_info1 "Done"
+}
+
+graceful_maintenance_on_cmd "$@"
+

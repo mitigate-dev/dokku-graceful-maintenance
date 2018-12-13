@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+
+graceful_maintenance_help_content_func() {
+  declare desc="return graceful-maintenance plugin help content"
+  cat<<help_content
+    graceful-maintenance:on <app>, Enable maintenance mode for app
+    graceful-maintenance:off <app>, Disable maintenance mode for app
+help_content
+}
+
+graceful_maintenance_help_cmd() {
+  if [[ $1 = "graceful-maintenance:help" ]] ; then
+    echo -e 'Usage: dokku graceful-maintenance[:COMMAND]'
+    echo ''
+    echo 'Gracefully turn on maintenance mode for your application'
+    echo ''
+    echo 'Additional commands:'
+    echo ''
+    graceful_maintenance_help_content_func | column -c2 -t -s,
+  elif [[ $(ps -o command= $PPID) == *"--all"* ]]; then
+    graceful_maintenance_help_content_func
+  else
+    cat<<help_desc
+    Gracefully turn on maintenance mode for your application
+help_desc
+  fi
+}

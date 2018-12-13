@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+source "$PLUGIN_AVAILABLE_PATH/nginx-vhosts/functions"
+
+graceful_maintenance_off_cmd() {
+  declare desc="disables maintenance mode"
+  local cmd="graceful-maintenance:off"
+  local app=$2
+
+  [[ -z $app ]] && dokku_log_fail "Please specify an app to run the command on"
+  verify_app_name $app
+
+  dokku_log_info1 "Disabling maintenance mode for $app"
+
+  local nginx_conf_directory="$DOKKU_ROOT/$app/nginx.conf.d"
+  [[ -f "$nginx_conf_directory/maintenance.conf" ]] && rm "$nginx_conf_directory/maintenance.conf"
+
+  restart_nginx
+  dokku_log_info1 "Done"
+}
+
+graceful_maintenance_off_cmd "$@"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_AVAILABLE_PATH/graceful-maintenance/help-functions"
+
+graceful_maintenance_help_cmd "graceful-maintenance:help"
