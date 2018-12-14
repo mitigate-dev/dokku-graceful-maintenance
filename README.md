@@ -10,6 +10,13 @@ dokku-graceful-maintenance modifies your nginx.conf to respond with HTTP 503 sta
 sudo dokku plugin:install https://github.com/mak-it/dokku-graceful-maintenance
 ```
 
+### Commands
+
+```
+graceful-maintenance:on <app>    Enable maintenance mode for app
+graceful-maintenance:off <app>   Disable maintenance mode for app
+```
+
 ### Usage
 
 First, set up HEALTHCHECK_ENDPOINT env variable for your app:
