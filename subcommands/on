@@ -31,4 +31,3 @@ EOF
 }
 
 graceful_maintenance_on_cmd "$@"
-

@@ -22,7 +22,7 @@ graceful-maintenance:off <app>   Disable maintenance mode for app
 First, set up HEALTHCHECK_ENDPOINT env variable for your app:
 
 ```
-dokku config:set <app> HEALTHCHECK_ENDPOINT=/status
+dokku config:set --no-restart <app> HEALTHCHECK_ENDPOINT=/status
 ```
 
 Enable maintenance mode:
